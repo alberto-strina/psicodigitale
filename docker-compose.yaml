@@ -22,11 +22,12 @@ services:
     depends_on:
       - db
     environment:
-      - DB_NAME=atipica
-      - DB_USER=atipica_user
-      - DB_PASSWORD=1qWNWFYJ20NDzIznlLF7ycvGN8ipfkMn
-      - DB_HOST=dpg-d5v5oavfte5s73cg80kg-a
+      - DB_NAME=psicologi_db
+      - DB_USER=psicologi_user
+      - DB_PASSWORD=psicologi_pass
+      - DB_HOST=db
       - DB_PORT=5432
+      - SECRET_KEY=django-insecure-ho5dg*sfcw#@!y0i(8&!vyegc+*2*pi=f)8&^b%6pgct-u^y*p
 
 volumes:
   postgres_data:

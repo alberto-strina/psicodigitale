@@ -27,12 +27,10 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['atipica.onrender.com']
+ALLOWED_HOSTS = ['atipica.onrender.com', 'localhost']
 
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # se hai una cartella "static" nella root del progetto
-]
+
 # Application definition
 
 LOGIN_REDIRECT_URL = "/admin/"
