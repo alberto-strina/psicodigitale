@@ -27,9 +27,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['atipica.onrender.com', 'localhost']
+ALLOWED_HOSTS = ['atipica.onrender.com', 'localhost', '127.0.0.1']
 
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
 
 # Application definition
 
@@ -58,6 +58,20 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'psicodigitale.urls'
 
+# Dove Django cerca i file statici nelle app
+STATIC_URL = "/static/"
+
+# Cartelle extra da cui servire static files (opzionale)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # ad esempio: progetto_root/static/
+]
+
+# Dove Django colleziona i file statici per deploy
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Backend di default per static files
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -82,10 +96,10 @@ WSGI_APPLICATION = 'psicodigitale.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'psicologi_db'),
-        'USER': os.getenv('DB_USER', 'psicologi_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'psicologi_pass'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT', 5432),
     }
 }
@@ -121,12 +135,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_ROOT = '/static/'
-STATIC_URL = BASE_DIR / 'staticfiles'
 
 
 # Default primary key field type
