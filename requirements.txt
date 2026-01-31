@@ -2,3 +2,5 @@ Django~=5.2.5
 psycopg2-binary>=2.9
 django-jazzmin
 django_select2
+dotenv
+gunicorn
