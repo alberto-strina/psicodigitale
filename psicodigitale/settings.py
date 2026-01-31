@@ -134,4 +134,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TYPEFORM_TOKEN = 'tfp_EMKejt7D7t4emKwM2zPtHZ9UG3vTLNySMdjQXj7y84Hk_dKNhipQpYu7Y'
+TYPEFORM_TOKEN = os.getenv("TYPEFORM_TOKEN")
