@@ -4,3 +4,4 @@ django-jazzmin
 django_select2
 dotenv
 gunicorn
+whitenoise
