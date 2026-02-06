@@ -5,3 +5,4 @@ django_select2
 dotenv
 gunicorn
 whitenoise
+git+https://github.com/unfoldadmin/django-unfold.git
