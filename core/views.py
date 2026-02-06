@@ -1,5 +1,6 @@
 from psicodigitale.settings import TYPEFORM_TOKEN
 from core.models import *
+from psicodigitale.settings import TYPEFORM_TOKEN
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 
@@ -10,29 +11,42 @@ import hashlib
 @csrf_exempt
 def typeform_webhook(request):
     if request.method != "POST":
-        return HttpResponseForbidden("Invalid method! Use POST method.")
+        return HttpResponseForbidden("POST only")
 
-    payload = request.body  # UNA SOLA LETTURA
+    # 1️⃣ raw body (UNA VOLTA)
+    raw_payload = request.body
+    if not raw_payload:
+        return HttpResponseForbidden("Empty body")
 
-    if not verify_typeform_signature(request.headers, payload):
-        return HttpResponseForbidden("Invalid signature")
+    # 2️⃣ verifica firma sui BYTES
+    if not is_valid_signature(request.headers, raw_payload):
+        return HttpResponseForbidden("Wrong signature")
 
-    data = json.loads(payload)
+    # 3️⃣ SOLO ORA parse JSON
+    try:
+        parsed_payload = json.loads(raw_payload.decode("utf-8"))
+    except json.JSONDecodeError:
+        return HttpResponseForbidden("Invalid JSON")
 
-    TypeFormResponse.objects.create(payload=data)
+    # 4️⃣ salva JSON
+    TypeFormResponse.objects.create(payload=parsed_payload)
 
     return JsonResponse({"status": "ok"})
 
 
-def verify_typeform_signature(headers, payload):
-    received_signature = headers.get("Typeform-Signature")
-    if not received_signature:
+def is_valid_signature(headers, payload: bytes) -> bool:
+    received = headers.get("Typeform-Signature")
+    if not received:
         return False
 
-    expected_signature = "sha256=" + hmac.new(
-        TYPEFORM_TOKEN.encode(),
+    received = received.strip()
+
+    secret = TYPEFORM_TOKEN.encode("utf-8")
+
+    expected = "sha256=" + hmac.new(
+        secret,
         payload,
         hashlib.sha256
     ).hexdigest()
 
-    return hmac.compare_digest(received_signature, expected_signature)
+    return hmac.compare_digest(received, expected)
