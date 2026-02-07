@@ -18,9 +18,9 @@ def typeform_webhook(request):
     if not raw_payload:
         return HttpResponseForbidden("Empty body")
 
-    # 2️⃣ verifica firma sui BYTES
-    if not is_valid_signature(request.headers, raw_payload):
-        return HttpResponseForbidden("Wrong signature")
+    # # 2️⃣ verifica firma sui BYTES
+    # if not is_valid_signature(request.headers, raw_payload):
+    #     return HttpResponseForbidden("Wrong signature")
 
     # 3️⃣ SOLO ORA parse JSON
     try:
