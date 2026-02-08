@@ -153,4 +153,4 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TYPEFORM_TOKEN = os.getenv("TYPEFORM_TOKEN")
+TYPEFORM_SECRET_KEY = os.getenv("TYPEFORM_TOKEN")

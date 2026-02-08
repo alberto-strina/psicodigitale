@@ -1,12 +1,12 @@
-from psicodigitale.settings import TYPEFORM_TOKEN
+from psicodigitale.settings import TYPEFORM_SECRET_KEY
 from core.models import *
-from psicodigitale.settings import TYPEFORM_TOKEN
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 
 import json
 import hmac
 import hashlib
+import base64
 
 
 @csrf_exempt
@@ -60,42 +60,52 @@ def acuity_webhook(request):
 @csrf_exempt
 def typeform_webhook(request):
     if request.method != "POST":
-        return HttpResponseForbidden("POST only")
+        return HttpResponseNotAllowed(["POST"])
 
-    # 1️⃣ raw body (UNA VOLTA)
-    raw_payload = request.body
-    if not raw_payload:
-        return HttpResponseForbidden("Empty body")
+    received_signature = request.headers.get("Typeform-Signature")
 
-    # # 2️⃣ verifica firma sui BYTES
-    # if not is_valid_signature(request.headers, raw_payload):
-    #     return HttpResponseForbidden("Wrong signature")
+    if not received_signature:
+        return HttpResponseForbidden("Permission denied")
 
-    # 3️⃣ SOLO ORA parse JSON
     try:
-        parsed_payload = json.loads(raw_payload.decode("utf-8"))
-    except json.JSONDecodeError:
-        return HttpResponseForbidden("Invalid JSON")
+        sha_name, signature = received_signature.split("=", 1)
+    except ValueError:
+        return HttpResponseForbidden("Invalid signature format")
 
-    # 4️⃣ salva JSON
-    TypeFormResponse.objects.create(payload=parsed_payload, headers=dict(request.headers))
+    if sha_name != "sha256":
+        return JsonResponse(
+            {"detail": "Operation not supported"},
+            status=501
+        )
+
+    raw_body = request.body
+
+    if not verify_signature(signature, raw_body):
+        return HttpResponseForbidden("Invalid signature")
+
+    # payload JSON (se ti serve)
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        payload = None
+
+    # TODO: logica webhook qui
+    TypeFormResponse.objects.create(payload=payload, headers=request.headers)
 
     return JsonResponse({"status": "ok"})
 
 
-def is_valid_signature(headers, payload: bytes) -> bool:
-    received = headers.get("Typeform-Signature")
-    if not received:
-        return False
+def verify_signature(received_signature: str, payload: bytes) -> bool:
+    secret = TYPEFORM_SECRET_KEY
+    if not secret:
+        raise RuntimeError("TYPEFORM_SECRET_KEY not set")
 
-    received = received.strip()
-
-    secret = TYPEFORM_TOKEN.encode("utf-8")
-
-    expected = "sha256=" + hmac.new(
-        secret,
+    digest = hmac.new(
+        secret.encode("utf-8"),
         payload,
         hashlib.sha256
-    ).hexdigest()
+    ).digest()
 
-    return hmac.compare_digest(received, expected)
+    expected_signature = base64.b64encode(digest).decode()
+
+    return hmac.compare_digest(expected_signature, received_signature)
