@@ -78,7 +78,7 @@ def typeform_webhook(request):
         return HttpResponseForbidden("Invalid JSON")
 
     # 4️⃣ salva JSON
-    TypeFormResponse.objects.create(payload=parsed_payload)
+    TypeFormResponse.objects.create(payload=parsed_payload, headers=request.headers)
 
     return JsonResponse({"status": "ok"})
 

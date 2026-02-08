@@ -137,12 +137,15 @@ class Seduta(models.Model):
 
 class TypeFormResponse(models.Model):
     payload = models.JSONField(blank=False, null=False)
+    headers = models.JSONField(blank=False, null=False)
     received_at = models.DateTimeField(auto_now_add=True)
 
 class StripeFormResponse(models.Model):
     payload = models.JSONField(blank=False, null=False)
+    headers = models.JSONField(blank=False, null=False)
     received_at = models.DateTimeField(auto_now_add=True)
 
 class AcuityFormResponse(models.Model):
     payload = models.JSONField(blank=False, null=False)
+    headers = models.JSONField(blank=False, null=False)
     received_at = models.DateTimeField(auto_now_add=True)
