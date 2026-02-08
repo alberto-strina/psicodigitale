@@ -1,12 +1,6 @@
 from pd.costants import *
 from django.db import models
 
-# Create your models here.
-class TypeFormResponse(models.Model):
-    payload = models.JSONField(blank=False, null=False)
-    received_at = models.DateTimeField(auto_now_add=True)
-
-
 class Psicologo(models.Model):
     # Informazioni personali
     nome = models.CharField(max_length=100)
@@ -137,3 +131,18 @@ class Seduta(models.Model):
 
     def __str__(self):
         return f"{self.data.strftime('%d/%m/%Y %H:%M')} - {self.paziente.nome} {self.paziente.cognome} ({self.tipo_seduta})"
+
+
+# ---------------------------- WEBHOOKS ---------------------------- #
+
+class TypeFormResponse(models.Model):
+    payload = models.JSONField(blank=False, null=False)
+    received_at = models.DateTimeField(auto_now_add=True)
+
+class StripeFormResponse(models.Model):
+    payload = models.JSONField(blank=False, null=False)
+    received_at = models.DateTimeField(auto_now_add=True)
+
+class AcuityFormResponse(models.Model):
+    payload = models.JSONField(blank=False, null=False)
+    received_at = models.DateTimeField(auto_now_add=True)
